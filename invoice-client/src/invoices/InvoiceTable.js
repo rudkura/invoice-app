@@ -1,6 +1,8 @@
 import { Table } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
 
 const InvoiceTable = ({items}) => {
+    const navigate = useNavigate();
 
     return (
         <div className="text-nowrap">
@@ -17,7 +19,7 @@ const InvoiceTable = ({items}) => {
                 </thead>
                 <tbody>
                 {items.map((item, index) => (
-                    <tr key={index+1} style={{cursor: "pointer"}}>
+                    <tr key={item._id} onClick={() => navigate(`/persons/show/${item._id}`)} style={{cursor: "pointer"}}>
                         <td>{index+1}</td>
                         <td>{item.product}</td>
                         <td>{item.seller.name}</td>

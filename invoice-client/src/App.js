@@ -4,6 +4,7 @@ import { Link, Navigate, Route, BrowserRouter as Router, Routes } from 'react-ro
 import InvoiceIndex from "./invoices/InvoiceIndex";
 import PersonIndex from './persons/PersonIndex';
 import PersonDetail from './persons/PersonDetail';
+import InvoiceDetail from './invoices/InvoiceDetail';
 function App() {
   return (
     <Router>
@@ -25,6 +26,9 @@ function App() {
           <Route path='/' element={<Navigate to={"/persons"} />} />
           <Route path='/persons' element={<PersonIndex />} />
           <Route path='/persons/show/:id' element={<PersonDetail />} />
+
+          <Route path='/invoices' element={<InvoiceIndex />} />
+          <Route path='/invoices/show/:id' element={<InvoiceDetail />} />
         </Routes>
       </Container>
     </Router>
