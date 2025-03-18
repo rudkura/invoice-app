@@ -1,0 +1,18 @@
+#project documentation
+documents/
+
+#MacOS
+.DS_Store
+
+#IDE
+.idea/
+.vscode/
+
+#Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+#Dependencies
+node_modules/
