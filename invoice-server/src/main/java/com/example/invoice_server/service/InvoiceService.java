@@ -1,5 +1,6 @@
 package com.example.invoice_server.service;
 
+import com.example.invoice_server.constant.InvoiceStatus;
 import com.example.invoice_server.dto.InvoiceDTO;
 import com.example.invoice_server.dto.InvoiceStatsDTO;
 
@@ -14,7 +15,7 @@ public interface InvoiceService {
     InvoiceDTO issue(UUID id);
     void delete(UUID id);
 
-    List<InvoiceDTO> getAll();
+    List<InvoiceDTO> getAll(InvoiceStatus status);
     List<InvoiceDTO> getSales(UUID id);
     List<InvoiceDTO> getPurchases(UUID id);
 

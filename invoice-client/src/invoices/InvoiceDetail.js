@@ -1,16 +1,34 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { apiGet } from "../utils/api";
-import { Card, Col, Row } from "react-bootstrap";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { apiDelete, apiGet, apiPut } from "../utils/api";
+import { ButtonGroup, Button, Card, Col, Row } from "react-bootstrap";
 import dateFormat from "../utils/dateFormat";
+import Country from "../persons/Country";
+import Status from "./Status";
 
 const InvoiceDetail = () => {
+    const navigate = useNavigate();
+
     const {id} = useParams();
     const [invoice, setInvoice] = useState({});
 
     useEffect(() => {
         apiGet("/api/invoices/" + id).then((data) => {setInvoice(data)}).catch((e) => {console.error(e);});
     }, [id]);
+
+    const handleIssue = () => {
+        apiPut(`/api/invoices/${id}/issue`)
+        .then((data) => {setInvoice(data)})
+        .catch((e) => {console.error(e);});
+    }
+    const handleDelete = () => {
+        apiDelete(`/api/invoices/${id}`)
+        .then(() => {navigate("/")})
+        .catch((e) => {console.error(e);});
+    }
+
+    const isIssued = invoice.status === Status.ISSUED;
+    const isMissingParty = !invoice?.buyer || !invoice?.seller;
 
     return (
         <>
@@ -19,25 +37,39 @@ const InvoiceDetail = () => {
                     <Card>
                         <Card.Header>
                             <Row>
-                                <Col sm={9}>Faktura č. {invoice.invoiceNumber}</Col>
-                                <Col sm={3}></Col>
+                                <Col lg={9}>Faktura č. {invoice.invoiceNumber}</Col>
+                                <Col lg={3}  className="text-center">
+                                    {isIssued ? (
+                                        <i>Vystaveno</i>
+                                    ) : (
+                                        <ButtonGroup size="sm">
+                                            <Button disabled={isMissingParty} variant="outline-success" onClick={handleIssue}>Vystavit</Button>
+                                            <Button variant="outline-dark" as={Link} to={`/invoices/edit/${id}`}>Upravit</Button>
+                                            <Button variant="outline-danger" onClick={handleDelete}>Smazat</Button>
+                                        </ButtonGroup>
+                                    )}
+                                </Col>
                             </Row>
                         </Card.Header>
                         <Card.Body>
                             <Card.Text>
                                 <Row>
-                                    <Col>
-                                        <p><span className="fw-bold"></span>Číslo faktury:<br />{invoice.invoiceNumber}</p>
-                                        <p><span className="fw-bold"></span>Produkt:<br />{invoice.product}</p>
-                                        <p><span className="fw-bold"></span>Cena:<br />{invoice.price}</p>
-                                        <p><span className="fw-bold"></span>DPH:<br />{invoice.vat}%</p>
-                                        <p><span className="fw-bold"></span>Vystaveno:<br />{dateFormat(invoice.issued)}</p>
-                                        <p><span className="fw-bold"></span>Splatnost:<br />{dateFormat(invoice.dueDate)}</p>
-                                        <p><span className="fw-bold"></span>Poznámka:<br />{invoice.note}</p>
+                                    <Col lg={4}>
+                                        <DetailsRow label="Číslo faktury" value={invoice.invoiceNumber} />
+                                        <DetailsRow label="Produkt" value={invoice.product} />
+                                        <DetailsRow label="Cena" value={invoice.price + " Kč"} />
+                                        <DetailsRow label="DPH" value={invoice.vat + "%"} />
+                                        <DetailsRow label="Vystaveno" value={dateFormat(invoice.issued, true)} />
+                                        <DetailsRow label="Splatnost" value={dateFormat(invoice.dueDate, true)} />
+                                        <DetailsRow label="Poznámka" value={invoice.note} />
+                                    </Col>
+                                    <Col lg={4}>
+                                        <ItemDetails title="Dodavatel" item={invoice.seller} />
+                                    </Col>
+                                    <Col lg={4}>
+                                        <ItemDetails title="Odběratel" item={invoice.buyer} />
                                     </Col>
                                 </Row>
-                                <Row></Row>
-                                <Row></Row>
                             </Card.Text>
                         </Card.Body>
                     </Card>
@@ -46,5 +78,43 @@ const InvoiceDetail = () => {
         </>
     );
 };
+
+const DetailsRow = ({ label, value, isPerson}) => {
+    return isPerson ? (
+        <p className="d-flex justify-content-between">
+            <span className="fw-bold">{label}</span>
+            <span className="text-end">{value}</span>
+        </p>
+    ) : (
+        <p>
+            <span className="fw-bold">{label}</span><br/>
+            {value}
+        </p>
+    );
+}
+
+const ItemDetails = ({ title, item}) => {
+    return (
+        <Card>
+            <Card.Header>{title}</Card.Header>
+            <Card.Body>
+                <Card.Text>
+                    <DetailsRow label="Jméno:" value={item?.name} isPerson />
+                    <DetailsRow label="IČO:" value={item?.companyId} isPerson />
+                    <DetailsRow label="DIČ:" value={item?.vatin} isPerson />
+                    <DetailsRow label="Telefon:" value={item?.phone} isPerson />
+                    <DetailsRow label="E-mail:" value={item?.mail} isPerson />
+                    <DetailsRow label="Adresa:" value={item ? (
+                        <>
+                            {item.street}<br />
+                            {item.zip}, {item.city}<br />
+                            {item.country === Country.CZECHIA ? "Česká republika" : "Slovensko"}
+                        </>
+                    ) : null} isPerson />
+                </Card.Text>
+            </Card.Body>
+        </Card>
+    )
+}
 
 export default InvoiceDetail;

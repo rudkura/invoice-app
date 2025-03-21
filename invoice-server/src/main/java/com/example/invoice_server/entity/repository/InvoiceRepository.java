@@ -15,6 +15,8 @@ public interface InvoiceRepository extends JpaRepository<InvoiceEntity, UUID> {
     List<InvoiceEntity> findBySellerAndSellerSnapshotNullAndStatusNot(PersonEntity seller, InvoiceStatus status);
     List<InvoiceEntity> findByBuyerAndBuyerSnapshotNullAndStatusNot(PersonEntity buyer, InvoiceStatus status);
 
+    List<InvoiceEntity> findByStatus(InvoiceStatus status);
+
     @Query("SELECT i FROM invoice i JOIN i.seller p WHERE i.status = 'ISSUED' AND p.id = :id")
     List<InvoiceEntity> findSales(@Param("id") UUID id);
 

@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { apiGet } from "../utils/api";
-import { Col, Row } from "react-bootstrap";
+import { Button, Col, Row } from "react-bootstrap";
 import PersonTable from "./PersonTable";
+import { Link } from "react-router-dom";
 
 const PersonIndex = () => {
     const [persons, setPersons] = useState([]);
@@ -21,6 +22,11 @@ const PersonIndex = () => {
             <Row>
                 <Col>
                     <PersonTable items={persons} />
+                </Col>
+            </Row>
+            <Row>
+                <Col className="text-center">
+                    <Button variant="success" as={Link} to="/persons/create">Přidat</Button>
                 </Col>
             </Row>
         </>

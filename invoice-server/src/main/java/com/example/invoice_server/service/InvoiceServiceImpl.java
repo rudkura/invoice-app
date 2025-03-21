@@ -66,8 +66,8 @@ public class InvoiceServiceImpl implements InvoiceService {
     }
 
     @Override
-    public List<InvoiceDTO> getAll() {
-        return invoiceRepository.findAll().stream()
+    public List<InvoiceDTO> getAll(InvoiceStatus status) {
+        return invoiceRepository.findByStatus(status).stream()
                 .map(invoiceMapper::toDTO)
                 .collect(Collectors.toList());
     }

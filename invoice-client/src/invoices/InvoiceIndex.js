@@ -1,26 +1,34 @@
 import { useEffect, useState } from "react";
 import { apiGet } from "../utils/api";
-import { Col, Row } from "react-bootstrap";
+import { Button, Col, Row } from "react-bootstrap";
 import InvoiceTable from "./InvoiceTable";
+import { Link } from "react-router-dom";
 
-const InvoiceIndex = () => {
+const InvoiceIndex = ({viewSaved = false}) => {
     const [invoices, setInvoices] = useState([]);
 
+    const apiUrl = viewSaved ? "/api/invoices/saved" : "/api/invoices"
+
     useEffect(() => {
-        apiGet("/api/invoices").then((data) => setInvoices(data))
+        apiGet(apiUrl).then((data) => setInvoices(data))
             .catch((e) => {console.error(e);});
-    }, []);
+    }, [viewSaved]);
 
     return (
         <>
             <Row>
                 <Col>
-                    <h1>Seznam faktur</h1>
+                    <h1>Seznam {viewSaved ? "uložených" : "vystavených"} faktur</h1>
                 </Col>
             </Row>
             <Row>
                 <Col>
                     <InvoiceTable items={invoices} />
+                </Col>
+            </Row>
+            <Row>
+                <Col className="text-center">
+                    <Button variant="success" as={Link} to={"/invoices/create"}>Přidat</Button>
                 </Col>
             </Row>
         </>

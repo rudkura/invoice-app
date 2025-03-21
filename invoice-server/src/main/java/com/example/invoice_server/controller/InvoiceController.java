@@ -1,5 +1,6 @@
 package com.example.invoice_server.controller;
 
+import com.example.invoice_server.constant.InvoiceStatus;
 import com.example.invoice_server.dto.InvoiceDTO;
 import com.example.invoice_server.dto.InvoiceStatsDTO;
 import com.example.invoice_server.service.InvoiceService;
@@ -46,8 +47,13 @@ public class InvoiceController {
     }
 
     @GetMapping("")
-    public List<InvoiceDTO> getAll() {
-        return invoiceService.getAll();
+    public List<InvoiceDTO> getIssued() {
+        return invoiceService.getAll(InvoiceStatus.ISSUED);
+    }
+
+    @GetMapping("/saved")
+    public List<InvoiceDTO> getSaved() {
+        return invoiceService.getAll(InvoiceStatus.NEW);
     }
 
     @GetMapping("/{id}/sales")

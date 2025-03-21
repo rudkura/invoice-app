@@ -1,16 +1,24 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { apiGet } from "../utils/api";
-import { Card, Col, Row } from "react-bootstrap";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { apiDelete, apiGet } from "../utils/api";
+import { Button, ButtonGroup, Card, Col, Row } from "react-bootstrap";
 import Country from "./Country";
 
 const PersonDetail = () => {
+    const navigate = useNavigate();
+
     const {id} = useParams();
     const [person, setPerson] = useState({});
 
     useEffect(() => {
         apiGet("/api/persons/" +id).then((data) => {setPerson(data)}).catch((e) => {console.error(e);});
     }, [id]);
+
+    const handleDelete = () => {
+        apiDelete("/api/persons/" + id)
+        .then(() => {navigate("/")})
+        .catch((e) => {console.error(e);});
+    }
 
     return (
         <>
@@ -20,7 +28,12 @@ const PersonDetail = () => {
                         <Card.Header>
                             <Row>
                                 <Col sm={9}>{person.name}</Col>
-                                <Col sm={3}></Col>
+                                <Col sm={3}>
+                                    <ButtonGroup>
+                                        <Button variant="outline-dark" size="sm" as={Link} to={"/persons/edit/" + id}>Upravit</Button>
+                                        <Button variant="outline-danger" size="sm" onClick={handleDelete}>Smazat</Button>
+                                    </ButtonGroup>
+                                </Col>
                             </Row>
                         </Card.Header>
                         <Card.Body>
@@ -35,7 +48,7 @@ const PersonDetail = () => {
                                     <Col>
                                         <p><span className="fw-bold">DIČ:</span><br />{person.vatin}</p>
                                         <p><span className="fw-bold">IBAN:</span><br />{person.iban}</p>
-                                        <p><span className="fw-bold">Číslo účtu:</span><br />{person.bankAccount}</p>
+                                        <p><span className="fw-bold">Číslo účtu:</span><br />{person.bankAccount}/{person.bankCode}</p>
                                         <p><span className="fw-bold">Poznámky:</span><br />{person.note}</p>
                                     </Col>
                                 </Row>
