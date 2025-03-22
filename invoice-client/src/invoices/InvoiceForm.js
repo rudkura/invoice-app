@@ -4,9 +4,12 @@ import { apiGet, apiPost, apiPut } from "../utils/api";
 import { Button, ButtonGroup, Col, Row } from "react-bootstrap";
 import { InputField } from "../components/InputField";
 import { InputSelect } from "../components/InputSelect";
+import { useMessage } from "../context/MessageContext";
+
 
 const InvoiceForm = () => {
     const navigate = useNavigate();
+    const { addMessage } = useMessage();
 
     const {id} = useParams();
 
@@ -30,11 +33,17 @@ const InvoiceForm = () => {
                 data.seller = {_id: data.seller?._id}
                 setInvoice(data);
             })
-            .catch((e) => {console.error(e);});
+            .catch((e) => {
+                console.error(e);
+                addMessage(e.message, "netError");
+            });
         }
         apiGet("/api/persons")
         .then((data) => {setPersons(data);})
-        .catch((e) => {console.error(e);});
+        .catch((e) => {
+            console.error(e);
+            addMessage(e.message, "netError");
+        });
     }, [id]);
 
     const handleSubmit = (e) => {
@@ -45,8 +54,14 @@ const InvoiceForm = () => {
             .then((data) => 
                 (isIssue ? apiPut(`/api/invoices/${data._id}/issue`).then(() => data) : data)
             )
-            .then((data) => navigate("/invoices/show/" + data._id))
-            .catch((e) => {console.error(e);});
+            .then((data) => {
+                addMessage(`Faktura ${isIssue ? "vystavena" : id ? "upravena" : "uložena"}`, isIssue ? "success" : "info");
+                navigate("/invoices/show/" + data._id);
+            })
+            .catch((e) => {
+                console.error(e);
+                addMessage(e.message, "netError")
+            });
     }
 
     const handleChange = (e) => {

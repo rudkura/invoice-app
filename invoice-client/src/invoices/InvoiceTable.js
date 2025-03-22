@@ -26,7 +26,7 @@ const InvoiceTable = ({items}) => {
                         <td>{item.product}</td>
                         <td>{item.seller?.name}</td>
                         <td>{item.buyer?.name}</td>
-                        <td>{item.price}</td>
+                        <td>{item.price} Kč</td>
                         <td>{item.invoiceNumber}</td>
                         <td>{item.status === Status.NEW ? "Nová" : "Vystavená"}</td>
                     </tr>

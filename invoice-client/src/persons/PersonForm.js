@@ -5,11 +5,13 @@ import { apiGet, apiPost, apiPut } from "../utils/api";
 import { Button, Col, Row } from "react-bootstrap";
 import { InputField } from "../components/InputField";
 import { InputCheck } from "../components/InputCheck";
+import { useMessage } from "../context/MessageContext";
 
 const PersonForm = () => {
     const navigate = useNavigate();
-
+    const { addMessage } = useMessage();
     const {id} = useParams();
+
     const [person, setPerson] = useState({
         name: undefined,
         companyId: undefined,
@@ -27,7 +29,12 @@ const PersonForm = () => {
 
     useEffect(() => {
         if (id) {
-            apiGet("/api/persons/" + id).then((data) => {setPerson(data)}).catch((e) => {console.error(e);});
+            apiGet("/api/persons/" + id)
+            .then((data) => {setPerson(data)})
+            .catch((e) => {
+                console.error(e);
+                addMessage(e.message, "netError");
+            });
         }
     }, [id]);
 
@@ -35,9 +42,13 @@ const PersonForm = () => {
         e.preventDefault();
         (id ? apiPut("/api/persons/" + id , person) : apiPost("/api/persons", person))
             .then((data) => {
-                navigate("/persons/show/" + data._id)
+                addMessage(id ? "Osoba upravena" : "Osoba přidána");
+                navigate("/persons/show/" + data._id);
             })
-            .catch((e) => {console.error(e);});
+            .catch((e) => {
+                console.error(e);
+                addMessage(e.message, "netError")
+            });
     };
 
     const handleChange = (e) => {

@@ -3,13 +3,21 @@ import { apiGet } from "../utils/api";
 import { Button, Col, Row } from "react-bootstrap";
 import PersonTable from "./PersonTable";
 import { Link } from "react-router-dom";
+import { useMessage } from "../context/MessageContext";
+
 
 const PersonIndex = () => {
     const [persons, setPersons] = useState([]);
+
+    const { addMessage } = useMessage();
     
     useEffect(() => {
-        apiGet("/api/persons").then((data) => setPersons(data))
-            .catch((e) => {console.error(e);});
+        apiGet("/api/persons")
+        .then((data) => setPersons(data))
+        .catch((e) => {
+            console.error(e);
+            addMessage(e.message, "netError")
+        });
     }, []);
 
     return (
@@ -30,7 +38,7 @@ const PersonIndex = () => {
                 </Col>
             </Row>
         </>
-    )
+    );
 };
 
 export default PersonIndex;

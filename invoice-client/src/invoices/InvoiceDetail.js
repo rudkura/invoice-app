@@ -5,26 +5,42 @@ import { ButtonGroup, Button, Card, Col, Row } from "react-bootstrap";
 import dateFormat from "../utils/dateFormat";
 import Country from "../persons/Country";
 import Status from "./Status";
+import { useMessage } from "../context/MessageContext";
 
 const InvoiceDetail = () => {
     const navigate = useNavigate();
+    const { addMessage } = useMessage();
 
     const {id} = useParams();
     const [invoice, setInvoice] = useState({});
 
     useEffect(() => {
-        apiGet("/api/invoices/" + id).then((data) => {setInvoice(data)}).catch((e) => {console.error(e);});
+        apiGet("/api/invoices/" + id).then((data) => {setInvoice(data)})
+        .catch((e) => {
+            console.error(e);
+            addMessage(e.message, "netError");
+        });
     }, [id]);
 
     const handleIssue = () => {
-        apiPut(`/api/invoices/${id}/issue`)
-        .then((data) => {setInvoice(data)})
-        .catch((e) => {console.error(e);});
+        apiPut(`/api/invoices/${id}/issue`).then((data) => {
+            addMessage("Faktura vystavena");
+            setInvoice(data);
+        })
+        .catch((e) => {
+            console.error(e);
+            addMessage(e.message, "netError");
+        });
     }
     const handleDelete = () => {
-        apiDelete(`/api/invoices/${id}`)
-        .then(() => {navigate("/")})
-        .catch((e) => {console.error(e);});
+        apiDelete(`/api/invoices/${id}`).then(() => {
+            addMessage("Faktura smazána", "warning")
+            navigate("/");
+        })
+        .catch((e) => {
+            console.error(e);
+            addMessage(e.message, "netError");
+        });
     }
 
     const isIssued = invoice.status === Status.ISSUED;
