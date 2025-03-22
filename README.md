@@ -1,7 +1,7 @@
 # Invoice App
 
 This project is a demonstration of a REST API system for managing invoices and persons. 
-I created it as part of my coding course and use it to practice my skills
+I created it as part of my coding course and use it to practice my skills.
 It is not intended for production use.
 
 ## Features
